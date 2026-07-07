@@ -1,5 +1,6 @@
 package com.mutsa.delivery.order.entity;
 
+import com.mutsa.delivery.cart.entity.CartItemOption;
 import com.mutsa.delivery.common.entity.BaseTimeEntity;
 import com.mutsa.delivery.menu.entity.Option;
 import jakarta.persistence.Column;
@@ -41,11 +42,30 @@ public class OrderItemOption extends BaseTimeEntity {
     @Column(name = "option_price", nullable = false)
     private Long optionPrice;
 
-    @Builder
-    public OrderItemOption(OrderItem orderItem, Option option, String optionName, Long optionPrice) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private OrderItemOption(OrderItem orderItem, Option option, String optionName, Long optionPrice) {
         this.orderItem = orderItem;
         this.option = option;
         this.optionName = optionName;
         this.optionPrice = optionPrice;
+    }
+
+    public static OrderItemOption fromCartItemOption(OrderItem orderItem, CartItemOption cartItemOption) {
+        if (orderItem == null) {
+            throw new IllegalArgumentException("orderItem must not be null");
+        }
+        if (cartItemOption == null) {
+            throw new IllegalArgumentException("cartItemOption must not be null");
+        }
+        Option option = cartItemOption.getOption();
+        if (option == null) {
+            throw new IllegalArgumentException("cartItemOption.option must not be null");
+        }
+        return OrderItemOption.builder()
+                .orderItem(orderItem)
+                .option(option)
+                .optionName(option.getOptionName())
+                .optionPrice(option.getExtraPrice())
+                .build();
     }
 }

@@ -36,10 +36,29 @@ public class CartItem extends BaseTimeEntity {
     @OneToMany(mappedBy = "cartItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItemOption> cartItemOptions = new ArrayList<>();
 
-    @Builder
-    public CartItem(Cart cart, Menu menu, Long itemQuantity) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private CartItem(Cart cart, Menu menu, Long itemQuantity) {
         this.cart = cart;
         this.menu = menu;
         this.itemQuantity = itemQuantity;
+    }
+
+    public static CartItem createNew(Cart cart, Menu menu, Long itemQuantity) {
+        if (cart == null) {
+            throw new IllegalArgumentException("cart must not be null");
+        }
+        if (menu == null) {
+            throw new IllegalArgumentException("menu must not be null");
+        }
+        if (itemQuantity == null || itemQuantity <= 0) {
+            throw new IllegalArgumentException("itemQuantity must be positive");
+        }
+        CartItem cartItem = CartItem.builder()
+                .cart(cart)
+                .menu(menu)
+                .itemQuantity(itemQuantity)
+                .build();
+        cart.getCartItems().add(cartItem);
+        return cartItem;
     }
 }

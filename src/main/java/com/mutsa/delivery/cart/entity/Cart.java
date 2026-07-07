@@ -29,8 +29,17 @@ public class Cart extends BaseTimeEntity {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    @Builder
-    public Cart(User user) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Cart(User user) {
         this.user = user;
+    }
+
+    public static Cart createNew(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("user must not be null");
+        }
+        return Cart.builder()
+                .user(user)
+                .build();
     }
 }

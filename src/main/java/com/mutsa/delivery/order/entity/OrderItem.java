@@ -1,5 +1,6 @@
 package com.mutsa.delivery.order.entity;
 
+import com.mutsa.delivery.cart.entity.CartItem;
 import com.mutsa.delivery.common.entity.BaseTimeEntity;
 import com.mutsa.delivery.menu.entity.Menu;
 import jakarta.persistence.Column;
@@ -44,12 +45,32 @@ public class OrderItem extends BaseTimeEntity {
     @Column(name = "item_quantity", nullable = false)
     private Long itemQuantity;
 
-    @Builder
-    public OrderItem(OrderStore orderStore, Menu menu, String menuName, Long itemPrice, Long itemQuantity) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private OrderItem(OrderStore orderStore, Menu menu, String menuName, Long itemPrice, Long itemQuantity) {
         this.orderStore = orderStore;
         this.menu = menu;
         this.menuName = menuName;
         this.itemPrice = itemPrice;
         this.itemQuantity = itemQuantity;
+    }
+
+    public static OrderItem fromCartItem(OrderStore orderStore, CartItem cartItem) {
+        if (orderStore == null) {
+            throw new IllegalArgumentException("orderStore must not be null");
+        }
+        if (cartItem == null) {
+            throw new IllegalArgumentException("cartItem must not be null");
+        }
+        Menu menu = cartItem.getMenu();
+        if (menu == null) {
+            throw new IllegalArgumentException("cartItem.menu must not be null");
+        }
+        return OrderItem.builder()
+                .orderStore(orderStore)
+                .menu(menu)
+                .menuName(menu.getMenuName())
+                .itemPrice(menu.getMenuPrice())
+                .itemQuantity(cartItem.getItemQuantity())
+                .build();
     }
 }

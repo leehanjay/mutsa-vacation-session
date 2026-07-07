@@ -40,11 +40,26 @@ public class Store extends BaseTimeEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Builder
-    public Store(Category category, String storeName, Double storeRating, String imageUrl) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Store(Category category, String storeName, Double storeRating, String imageUrl) {
         this.category = category;
         this.storeName = storeName;
         this.storeRating = storeRating;
         this.imageUrl = imageUrl;
+    }
+
+    public static Store createNew(Category category, String storeName, Double storeRating, String imageUrl) {
+        if (category == null) {
+            throw new IllegalArgumentException("category must not be null");
+        }
+        if (storeName == null || storeName.isBlank()) {
+            throw new IllegalArgumentException("storeName must not be blank");
+        }
+        return Store.builder()
+                .category(category)
+                .storeName(storeName)
+                .storeRating(storeRating)
+                .imageUrl(imageUrl)
+                .build();
     }
 }

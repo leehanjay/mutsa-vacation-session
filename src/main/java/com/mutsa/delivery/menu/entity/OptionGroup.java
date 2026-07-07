@@ -42,11 +42,29 @@ public class OptionGroup extends BaseTimeEntity {
     @Column(name = "is_required", nullable = false)
     private boolean required;
 
-    @Builder
-    public OptionGroup(Menu menu, String groupName, SelectionType selectionType, boolean required) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private OptionGroup(Menu menu, String groupName, SelectionType selectionType, boolean required) {
         this.menu = menu;
         this.groupName = groupName;
         this.selectionType = selectionType;
         this.required = required;
+    }
+
+    public static OptionGroup createNew(Menu menu, String groupName, SelectionType selectionType, boolean required) {
+        if (menu == null) {
+            throw new IllegalArgumentException("menu must not be null");
+        }
+        if (groupName == null || groupName.isBlank()) {
+            throw new IllegalArgumentException("groupName must not be blank");
+        }
+        if (selectionType == null) {
+            throw new IllegalArgumentException("selectionType must not be null");
+        }
+        return OptionGroup.builder()
+                .menu(menu)
+                .groupName(groupName)
+                .selectionType(selectionType)
+                .required(required)
+                .build();
     }
 }

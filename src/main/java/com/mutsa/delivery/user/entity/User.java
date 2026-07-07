@@ -32,10 +32,24 @@ public class User extends BaseTimeEntity {
     @Column(name = "credit", nullable = false)
     private Long credit;
 
-    @Builder
-    public User(String loginId, String password, Long credit) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private User(String loginId, String password, Long credit) {
         this.loginId = loginId;
         this.password = password;
-        this.credit = credit == null ? 0L : credit;
+        this.credit = credit;
+    }
+
+    public static User createNew(String loginId, String password) {
+        if (loginId == null || loginId.isBlank()) {
+            throw new IllegalArgumentException("loginId must not be blank");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("password must not be blank");
+        }
+        return User.builder()
+                .loginId(loginId)
+                .password(password)
+                .credit(0L)
+                .build();
     }
 }

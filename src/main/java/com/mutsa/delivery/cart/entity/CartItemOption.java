@@ -35,9 +35,24 @@ public class CartItemOption extends BaseTimeEntity {
     @JoinColumn(name = "option_id", nullable = false)
     private Option option;
 
-    @Builder
-    public CartItemOption(CartItem cartItem, Option option) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private CartItemOption(CartItem cartItem, Option option) {
         this.cartItem = cartItem;
         this.option = option;
+    }
+
+    public static CartItemOption createNew(CartItem cartItem, Option option) {
+        if (cartItem == null) {
+            throw new IllegalArgumentException("cartItem must not be null");
+        }
+        if (option == null) {
+            throw new IllegalArgumentException("option must not be null");
+        }
+        CartItemOption cartItemOption = CartItemOption.builder()
+                .cartItem(cartItem)
+                .option(option)
+                .build();
+        cartItem.getCartItemOptions().add(cartItemOption);
+        return cartItemOption;
     }
 }

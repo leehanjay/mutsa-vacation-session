@@ -26,8 +26,17 @@ public class Category extends BaseTimeEntity {
     @Column(name = "tag_name", nullable = false)
     private String tagName;
 
-    @Builder
-    public Category(String tagName) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Category(String tagName) {
         this.tagName = tagName;
+    }
+
+    public static Category createNew(String tagName) {
+        if (tagName == null || tagName.isBlank()) {
+            throw new IllegalArgumentException("tagName must not be blank");
+        }
+        return Category.builder()
+                .tagName(tagName)
+                .build();
     }
 }

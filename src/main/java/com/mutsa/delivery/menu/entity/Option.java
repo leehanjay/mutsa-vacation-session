@@ -36,10 +36,27 @@ public class Option extends BaseTimeEntity {
     @Column(name = "extra_price", nullable = false)
     private Long extraPrice;
 
-    @Builder
-    public Option(OptionGroup optionGroup, String optionName, Long extraPrice) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Option(OptionGroup optionGroup, String optionName, Long extraPrice) {
         this.optionGroup = optionGroup;
         this.optionName = optionName;
         this.extraPrice = extraPrice;
+    }
+
+    public static Option createNew(OptionGroup optionGroup, String optionName, Long extraPrice) {
+        if (optionGroup == null) {
+            throw new IllegalArgumentException("optionGroup must not be null");
+        }
+        if (optionName == null || optionName.isBlank()) {
+            throw new IllegalArgumentException("optionName must not be blank");
+        }
+        if (extraPrice == null || extraPrice < 0) {
+            throw new IllegalArgumentException("extraPrice must not be negative");
+        }
+        return Option.builder()
+                .optionGroup(optionGroup)
+                .optionName(optionName)
+                .extraPrice(extraPrice)
+                .build();
     }
 }

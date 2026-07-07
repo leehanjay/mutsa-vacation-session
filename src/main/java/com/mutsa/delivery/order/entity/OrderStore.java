@@ -38,10 +38,24 @@ public class OrderStore extends BaseTimeEntity {
     @Column(name = "store_name", nullable = false)
     private String storeName;
 
-    @Builder
-    public OrderStore(Order order, Store store, String storeName) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private OrderStore(Order order, Store store, String storeName) {
         this.order = order;
         this.store = store;
         this.storeName = storeName;
+    }
+
+    public static OrderStore createNew(Order order, Store store, String storeName) {
+        if (order == null) {
+            throw new IllegalArgumentException("order must not be null");
+        }
+        if (storeName == null || storeName.isBlank()) {
+            throw new IllegalArgumentException("storeName must not be blank");
+        }
+        return OrderStore.builder()
+                .order(order)
+                .store(store)
+                .storeName(storeName)
+                .build();
     }
 }

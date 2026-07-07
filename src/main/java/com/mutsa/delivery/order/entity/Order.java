@@ -43,11 +43,29 @@ public class Order extends BaseTimeEntity {
     @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus;
 
-    @Builder
-    public Order(User user, Long totalPrice, Long usedCredit, OrderStatus orderStatus) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Order(User user, Long totalPrice, Long usedCredit, OrderStatus orderStatus) {
         this.user = user;
         this.totalPrice = totalPrice;
         this.usedCredit = usedCredit;
         this.orderStatus = orderStatus;
+    }
+
+    public static Order createNew(User user, Long totalPrice, Long usedCredit) {
+        if (user == null) {
+            throw new IllegalArgumentException("user must not be null");
+        }
+        if (totalPrice == null || totalPrice < 0) {
+            throw new IllegalArgumentException("totalPrice must not be negative");
+        }
+        if (usedCredit == null || usedCredit < 0) {
+            throw new IllegalArgumentException("usedCredit must not be negative");
+        }
+        return Order.builder()
+                .user(user)
+                .totalPrice(totalPrice)
+                .usedCredit(usedCredit)
+                .orderStatus(OrderStatus.PENDING)
+                .build();
     }
 }

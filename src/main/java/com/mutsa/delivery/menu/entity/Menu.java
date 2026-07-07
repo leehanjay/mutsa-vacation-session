@@ -37,10 +37,27 @@ public class Menu extends BaseTimeEntity {
     @Column(name = "menu_price", nullable = false)
     private Long menuPrice;
 
-    @Builder
-    public Menu(Store store, String menuName, Long menuPrice) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Menu(Store store, String menuName, Long menuPrice) {
         this.store = store;
         this.menuName = menuName;
         this.menuPrice = menuPrice;
+    }
+
+    public static Menu createNew(Store store, String menuName, Long menuPrice) {
+        if (store == null) {
+            throw new IllegalArgumentException("store must not be null");
+        }
+        if (menuName == null || menuName.isBlank()) {
+            throw new IllegalArgumentException("menuName must not be blank");
+        }
+        if (menuPrice == null || menuPrice < 0) {
+            throw new IllegalArgumentException("menuPrice must not be negative");
+        }
+        return Menu.builder()
+                .store(store)
+                .menuName(menuName)
+                .menuPrice(menuPrice)
+                .build();
     }
 }

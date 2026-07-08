@@ -24,12 +24,15 @@ public class CreditService {
         User user = userRepository.findById(CURRENT_USER_ID)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. userId=" + CURRENT_USER_ID));
 
-        Long balanceAfter = user.getCredit() + request.getAmount();
-        user.updateCredit(balanceAfter);
+        Long balanceAfter = user.getCredit() + request.getAmount(); // 잔액 변화 계산
+        user.updateCredit(balanceAfter); // 유저 정보에 업데이트
 
+        // 크레딧 내역 생성
         CreditTransaction creditTransaction = CreditTransaction.charge(user, request.getAmount(), balanceAfter);
+        // 그 크레딧 내역을 레포에 저장
         creditTransactionRepository.save(creditTransaction);
 
+        // 그걸 DTO로 변환
         return CreditChargeResponseDto.from(creditTransaction);
     }
 }

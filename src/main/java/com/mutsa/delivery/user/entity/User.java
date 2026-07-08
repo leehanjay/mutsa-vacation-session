@@ -52,4 +52,7 @@ public class User extends BaseTimeEntity {
                 .credit(0L)
                 .build();
     }
+    public void updateCredit(Long creditBalance){
+        this.credit = creditBalance;
+    }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +32,10 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "credit", nullable = false)
     private Long credit;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version; // 낙관적 락: 동시에 크레딧을 변경할 때 lost update 방지
 
     @Builder(access = AccessLevel.PRIVATE)
     private User(String loginId, String password, Long credit) {

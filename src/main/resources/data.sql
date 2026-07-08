@@ -1,8 +1,8 @@
 -- 초기 더미데이터
 -- INSERT IGNORE: 서버 재시작 시 data.sql이 매번 재실행되어도 PK 중복 오류가 나지 않도록 함
 
-INSERT IGNORE INTO users (user_id, login_id, password, credit, created_at, updated_at)
-VALUES (1, 'mutsa_user', 'password123', 5000, NOW(), NOW());
+INSERT IGNORE INTO users (user_id, login_id, password, credit, version, created_at, updated_at)
+VALUES (1, 'mutsa_user', 'password123', 5000, 0, NOW(), NOW());
 
 INSERT IGNORE INTO categories (category_id, tag_name, created_at, updated_at)
 VALUES

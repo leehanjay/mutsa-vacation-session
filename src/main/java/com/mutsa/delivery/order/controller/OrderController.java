@@ -3,6 +3,7 @@ package com.mutsa.delivery.order.controller;
 import com.mutsa.delivery.order.dto.request.OrderRequestDto;
 import com.mutsa.delivery.order.dto.response.OrderResponseDto;
 import com.mutsa.delivery.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<Map<String,Object>> createOrder(@RequestBody OrderRequestDto requestDto){
+    public ResponseEntity<Map<String,Object>> createOrder(@Valid @RequestBody OrderRequestDto requestDto){
         Long dummyUserId = 1L;
 
         OrderResponseDto responseDto = orderService.createOrder(dummyUserId, requestDto);

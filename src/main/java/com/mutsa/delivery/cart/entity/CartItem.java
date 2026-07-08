@@ -61,4 +61,12 @@ public class CartItem extends BaseTimeEntity {
         cart.getCartItems().add(cartItem);
         return cartItem;
     }
+
+    //변경됨
+    public void updateQuantity(Long newQuantity) {
+        if (newQuantity < 1) {
+            throw new IllegalArgumentException("장바구니 수량은 최소 1개 이상이어야 합니다.");
+        }
+        this.itemQuantity = newQuantity;
+    }
 }

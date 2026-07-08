@@ -1,10 +1,12 @@
 package com.mutsa.delivery.store.controller;
 
+import com.mutsa.delivery.store.dto.response.StoreDetailResponseDto;
 import com.mutsa.delivery.store.dto.response.StoreResponseDto;
 import com.mutsa.delivery.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,5 +24,10 @@ public class StoreController {
     public ResponseEntity<List<StoreResponseDto>> getStores(
             @RequestParam(required = false) String category) {
         return ResponseEntity.ok(storeService.getStores(category));
+    }
+
+    @GetMapping("/{storeId}")
+    public ResponseEntity<StoreDetailResponseDto> getStoreDetail(@PathVariable Long storeId) {
+        return ResponseEntity.ok(storeService.getStoreDetail(storeId));
     }
 }

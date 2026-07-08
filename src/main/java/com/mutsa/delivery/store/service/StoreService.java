@@ -47,10 +47,10 @@ public class StoreService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가게입니다. storeId=" + storeId));
 
         List<Menu> menus = menuRepository.findByStore(store); // 가게 기준으로 메뉴 찾기
-        // 찾은 메뉴들 전체에 대한 옵션그룹을 한 번에 조회 (쿼리 1번)
-        List<OptionGroup> optionGroups = optionGroupRepository.findByMenuIn(menus);
-        // 그 옵션그룹들에 포함된 옵션을 한 번에 조회 (쿼리 1번)
-        List<Option> options = optionRepository.findByOptionGroupIn(optionGroups);
+        // 찾은 메뉴들 전체에 대한 옵션그룹을 한 번에 조회 (쿼리 1번). 메뉴가 없으면 빈 IN() 조회를 피하기 위해 바로 빈 리스트 처리
+        List<OptionGroup> optionGroups = menus.isEmpty() ? List.of() : optionGroupRepository.findByMenuIn(menus);
+        // 그 옵션그룹들에 포함된 옵션을 한 번에 조회 (쿼리 1번). 옵션그룹이 없으면 빈 IN() 조회를 피하기 위해 바로 빈 리스트 처리
+        List<Option> options = optionGroups.isEmpty() ? List.of() : optionRepository.findByOptionGroupIn(optionGroups);
 
         // 아래 MAP은 쿼리 한 번으로 다 불러오다보니, mapping이 안 되어 있어서 mapping 하는 작업
         Map<Long, List<OptionGroup>> optionGroupsByMenuId = optionGroups.stream()

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
-@RequiredArgsConstructor
+@RestController // API 관련 요청이 오는 걸 받음
+@RequiredArgsConstructor // final이 붙은 필드에 대한 생성자 자동 생성
 @RequestMapping("/categories")
 public class CategoryController {
 

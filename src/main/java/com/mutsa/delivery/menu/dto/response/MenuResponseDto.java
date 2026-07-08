@@ -14,6 +14,8 @@ public class MenuResponseDto {
     private Long menuPrice;
     private List<OptionGroupResponseDto> optionGroups;
 
+    // Entity → DTO 변환
+    // Service에서 미리 조립된 DTO 리스트를 넘겨 받음
     public static MenuResponseDto of(Menu menu, List<OptionGroupResponseDto> optionGroups) {
         return MenuResponseDto.builder()
                 .menuId(menu.getMenuId())

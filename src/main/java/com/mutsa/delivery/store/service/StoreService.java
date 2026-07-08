@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor // final 필드들을 매개변수로 받는 생성자를 자동으로 만들어줌
 public class StoreService {
 
     private final StoreRepository storeRepository;
@@ -31,7 +31,7 @@ public class StoreService {
 
     @Transactional(readOnly = true)
     public List<StoreResponseDto> getStores(String category) {
-        List<Store> stores = (category == null || category.isBlank())
+        List<Store> stores = (category == null || category.isBlank()) // null이면 카테고리 전체를 의미
                 ? storeRepository.findAll()
                 : storeRepository.findByCategory_TagName(category);
 
@@ -45,15 +45,19 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가게입니다. storeId=" + storeId));
 
-        List<Menu> menus = menuRepository.findByStore(store);
+        List<Menu> menus = menuRepository.findByStore(store); // 가게 기준으로 메뉴 찾기
+        // 찾은 메뉴들 전체에 대한 옵션그룹을 한 번에 조회 (쿼리 1번)
         List<OptionGroup> optionGroups = optionGroupRepository.findByMenuIn(menus);
+        // 그 옵션그룹들에 포함된 옵션을 한 번에 조회 (쿼리 1번)
         List<Option> options = optionRepository.findByOptionGroupIn(optionGroups);
 
+        // 아래 MAP은 쿼리 한 번으로 다 불러오다보니, mapping이 안 되어 있어서 mapping 하는 작업
         Map<Long, List<OptionGroup>> optionGroupsByMenuId = optionGroups.stream()
                 .collect(Collectors.groupingBy(optionGroup -> optionGroup.getMenu().getMenuId()));
         Map<Long, List<Option>> optionsByGroupId = options.stream()
                 .collect(Collectors.groupingBy(option -> option.getOptionGroup().getOptionGroupId()));
 
+        // 위에서 만든 두 MAP을 참고해 최종 DTO로 조립
         List<MenuResponseDto> menuDtos = menus.stream()
                 .map(menu -> toMenuResponseDto(menu, optionGroupsByMenuId, optionsByGroupId))
                 .collect(Collectors.toList());
@@ -61,6 +65,7 @@ public class StoreService {
         return StoreDetailResponseDto.of(store, menuDtos);
     }
 
+    // 메뉴를 옵션 그룹과 묶기 위한 메서드
     private MenuResponseDto toMenuResponseDto(
             Menu menu,
             Map<Long, List<OptionGroup>> optionGroupsByMenuId,

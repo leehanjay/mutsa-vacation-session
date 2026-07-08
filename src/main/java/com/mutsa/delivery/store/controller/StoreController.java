@@ -22,6 +22,7 @@ public class StoreController {
 
     @GetMapping
     public ResponseEntity<List<StoreResponseDto>> getStores(
+            // "/stores?category={카테고리명}" 요청의 쿼리파라미터를 받기 위한 어노테이션
             @RequestParam(required = false) String category) {
         return ResponseEntity.ok(storeService.getStores(category));
     }

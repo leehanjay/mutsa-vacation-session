@@ -3,10 +3,7 @@ package com.mutsa.delivery.cart.entity;
 import com.mutsa.delivery.common.entity.BaseTimeEntity;
 import com.mutsa.delivery.menu.entity.Menu;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,5 +57,13 @@ public class CartItem extends BaseTimeEntity {
                 .build();
         cart.getCartItems().add(cartItem);
         return cartItem;
+    }
+
+    //변경됨
+    public void updateQuantity(Long newQuantity) {
+        if (newQuantity < 1) {
+            throw new IllegalArgumentException("장바구니 수량은 최소 1개 이상이어야 합니다.");
+        }
+        this.itemQuantity = newQuantity;
     }
 }

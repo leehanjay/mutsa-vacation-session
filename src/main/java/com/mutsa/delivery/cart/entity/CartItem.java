@@ -3,7 +3,10 @@ package com.mutsa.delivery.cart.entity;
 import com.mutsa.delivery.common.entity.BaseTimeEntity;
 import com.mutsa.delivery.menu.entity.Menu;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;

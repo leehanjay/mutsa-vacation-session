@@ -83,8 +83,8 @@ public class CartService {
         if (!cartItem.getCart().getUser().getUserId().equals(userId)) {
             throw new IllegalArgumentException("해당 장바구니 상품에 대한 권한이 없습니다.");}
 
-            cartItem.updateQuantity(quantity);
-            return CartItemResponseDto.from(cartItem);
+        cartItem.updateQuantity(quantity);
+        return CartItemResponseDto.from(cartItem);
     }
 
     @Transactional

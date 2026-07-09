@@ -11,6 +11,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @RestControllerAdvice
 public class GeneralExceptionAdvice {
@@ -22,13 +25,13 @@ public class GeneralExceptionAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        String message = e.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .map(fieldError -> fieldError.getDefaultMessage())
-                .orElse(GeneralErrorCode.BAD_REQUEST.getMessage());
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getFieldErrors()
+                .forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
+
         return ResponseEntity.status(GeneralErrorCode.BAD_REQUEST.getStatus())
-                .body(ApiResponse.onFailure(GeneralErrorCode.BAD_REQUEST, message));
+                .body(ApiResponse.onFailure(GeneralErrorCode.BAD_REQUEST, errors));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

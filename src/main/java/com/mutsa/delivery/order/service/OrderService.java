@@ -7,12 +7,14 @@ import com.mutsa.delivery.cart.repository.CartItemRepository;
 import com.mutsa.delivery.cart.repository.CartRepository;
 import com.mutsa.delivery.credit.entity.CreditTransaction;
 import com.mutsa.delivery.credit.repository.CreditTransactionRepository;
+import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.order.dto.request.OrderRequestDto;
 import com.mutsa.delivery.order.dto.response.OrderResponseDto;
 import com.mutsa.delivery.order.entity.Order;
 import com.mutsa.delivery.order.entity.OrderItem;
 import com.mutsa.delivery.order.entity.OrderItemOption;
 import com.mutsa.delivery.order.entity.OrderStore;
+import com.mutsa.delivery.order.exception.OrderErrorCode;
 import com.mutsa.delivery.order.repository.OrderItemOptionRepository;
 import com.mutsa.delivery.order.repository.OrderItemRepository;
 import com.mutsa.delivery.order.repository.OrderRepository;
@@ -43,18 +45,18 @@ public class OrderService {
     @Transactional
     public OrderResponseDto createOrder(Long userId, OrderRequestDto requestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다. "));
+                .orElseThrow(() -> new ProjectException(OrderErrorCode.USER_NOT_FOUND)); // 변경
 
         if (user.getCredit() < requestDto.getUsedCredit()) {
-            throw new IllegalArgumentException("보유하신 크레딧이 부족합니다.");
+            throw new ProjectException(OrderErrorCode.INSUFFICIENT_CREDIT); // 변경
         }
 
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니가 비어 있습니다."));
+                .orElseThrow(() -> new ProjectException(OrderErrorCode.CART_EMPTY)); // 변경
 
         List<CartItem> cartItems = cart.getCartItems();
         if (cartItems == null || cartItems.isEmpty()) {
-            throw new IllegalArgumentException("주문할 상품이 장바구니에 없습니다.");
+            throw new ProjectException(OrderErrorCode.CART_EMPTY); // 변경
         }
 
         Long totalPrice = 0L;
@@ -69,7 +71,7 @@ public class OrderService {
 
         // 입력된 크레딧이 총 주문 금액을 초과하는지 검증
         if (totalPrice < requestDto.getUsedCredit()) {
-            throw new IllegalArgumentException("주문 금액보다 많은 크레딧을 사용할 수 없습니다.");
+            throw new ProjectException(OrderErrorCode.INVALID_CREDIT_USAGE);
         }
 
         Order order = Order.createNew(user, totalPrice, requestDto.getUsedCredit());

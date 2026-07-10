@@ -4,6 +4,8 @@ import com.mutsa.delivery.credit.dto.request.CreditChargeRequestDto;
 import com.mutsa.delivery.credit.dto.response.CreditChargeResponseDto;
 import com.mutsa.delivery.credit.entity.CreditTransaction;
 import com.mutsa.delivery.credit.repository.CreditTransactionRepository;
+import com.mutsa.delivery.global.apiPayload.code.GeneralErrorCode;
+import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.user.entity.User;
 import com.mutsa.delivery.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class CreditService {
     @Transactional
     public CreditChargeResponseDto charge(CreditChargeRequestDto request) {
         User user = userRepository.findById(CURRENT_USER_ID)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다. userId=" + CURRENT_USER_ID));
+                .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND));
 
         Long balanceAfter = user.getCredit() + request.getAmount(); // 잔액 변화 계산
         user.updateCredit(balanceAfter); // 유저 정보에 업데이트

@@ -7,9 +7,11 @@ import com.mutsa.delivery.cart.dto.response.CartResponseDto;
 import com.mutsa.delivery.cart.entity.Cart;
 import com.mutsa.delivery.cart.entity.CartItem;
 import com.mutsa.delivery.cart.entity.CartItemOption;
+import com.mutsa.delivery.cart.exception.CartErrorCode;
 import com.mutsa.delivery.cart.repository.CartItemOptionRepository;
 import com.mutsa.delivery.cart.repository.CartItemRepository;
 import com.mutsa.delivery.cart.repository.CartRepository;
+import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.menu.entity.Menu;
 import com.mutsa.delivery.menu.entity.Option;
 import com.mutsa.delivery.menu.repository.MenuRepository;
@@ -34,12 +36,12 @@ public class CartService {
     private final OptionRepository optionRepository;
     private final UserRepository userRepository;
 
-    //장바구니 담기
+    // 장바구니 담기
     @Transactional
     public Long addCartItem(CartItemAddRequestDto requestDto) {
         Long dummyUserId = 1L;
         User user = userRepository.findById(dummyUserId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new ProjectException(CartErrorCode.USER_NOT_FOUND)); // 변경
 
         Cart cart = cartRepository.findByUserId(dummyUserId)
                 .orElseGet(() -> {
@@ -48,7 +50,7 @@ public class CartService {
                 });
 
         Menu menu = menuRepository.findById(requestDto.getMenuId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 메뉴입니다."));
+                .orElseThrow(() -> new ProjectException(CartErrorCode.MENU_NOT_FOUND)); // 변경
 
         CartItem cartItem = CartItem.createNew(cart, menu, requestDto.getItemQuantity());
         CartItem savedCartItem = cartItemRepository.save(cartItem);
@@ -57,31 +59,33 @@ public class CartService {
             List<Option> options = optionRepository.findAllById(requestDto.getOptionIds());
 
             if (options.size() != requestDto.getOptionIds().size()) {
-                throw new IllegalArgumentException("존재하지 않는 옵션이 포함되어 있습니다.");
+                throw new ProjectException(CartErrorCode.OPTION_NOT_FOUND); // 변경
             }
 
             for (Option option : options) {
-                CartItemOption cartItemOption = CartItemOption.createNew(savedCartItem,option);
+                CartItemOption cartItemOption = CartItemOption.createNew(savedCartItem, option);
                 cartItemOptionRepository.save(cartItemOption);
             }
         }
 
         return savedCartItem.getCartItemId();
     }
+
     @Transactional(readOnly = true)
     public CartResponseDto getCart(Long userId) {
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니가 비어 있습니다."));
+                .orElseThrow(() -> new ProjectException(CartErrorCode.CART_NOT_FOUND)); // 변경
         return CartResponseDto.from(cart);
     }
 
     @Transactional
     public CartItemResponseDto updateCartItemQuantity(Long userId, Long cartItemId, Long quantity) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(() -> new IllegalArgumentException("장바구니 상품이 존재하지 않습니다"));
+                .orElseThrow(() -> new ProjectException(CartErrorCode.CART_ITEM_NOT_FOUND)); // 변경
 
         if (!cartItem.getCart().getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("해당 장바구니 상품에 대한 권한이 없습니다.");}
+            throw new ProjectException(CartErrorCode.CART_ITEM_ACCESS_DENIED); // 변경
+        }
 
         cartItem.updateQuantity(quantity);
         return CartItemResponseDto.from(cartItem);
@@ -90,10 +94,10 @@ public class CartService {
     @Transactional
     public void deleteCartItem(Long userId, Long cartItemId) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
-                .orElseThrow(()-> new IllegalArgumentException("장바구니 상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new ProjectException(CartErrorCode.CART_ITEM_NOT_FOUND)); // 변경
 
         if (!cartItem.getCart().getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("해당 장바구니 상품에 대한 권한이 없습니다.");
+            throw new ProjectException(CartErrorCode.CART_ITEM_ACCESS_DENIED); // 변경
         }
         cartItemRepository.delete(cartItem);
     }

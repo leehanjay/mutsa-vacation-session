@@ -1,5 +1,7 @@
 package com.mutsa.delivery.order.controller;
 
+import com.mutsa.delivery.global.apiPayload.ApiResponse;
+import com.mutsa.delivery.global.apiPayload.code.GeneralSuccessCode;
 import com.mutsa.delivery.order.dto.request.OrderRequestDto;
 import com.mutsa.delivery.order.dto.response.OrderResponseDto;
 import com.mutsa.delivery.order.service.OrderService;
@@ -21,17 +23,14 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    // 주문 및 결제 생성
     @PostMapping
-    public ResponseEntity<Map<String,Object>> createOrder(@Valid @RequestBody OrderRequestDto requestDto){
+    public ResponseEntity<ApiResponse<?>> createOrder(@Valid @RequestBody OrderRequestDto requestDto) {
         Long dummyUserId = 1L;
 
         OrderResponseDto responseDto = orderService.createOrder(dummyUserId, requestDto);
 
-        // 팀 공통 응답 포맷에 맞춰 201 Created 상태 코드로 응답
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "success", true,
-                "message", "주문 및 결제가 성공적으로 완료되었습니다.",
-                "data", responseDto
-        ));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.onSuccess(GeneralSuccessCode.CREATED, responseDto));
     }
 }

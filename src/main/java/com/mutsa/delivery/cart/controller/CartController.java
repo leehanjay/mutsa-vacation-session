@@ -5,6 +5,8 @@ import com.mutsa.delivery.cart.dto.request.CartItemUpdateRequestDto;
 import com.mutsa.delivery.cart.dto.response.CartResponseDto;
 import com.mutsa.delivery.cart.repository.CartItemRepository;
 import com.mutsa.delivery.cart.service.CartService;
+import com.mutsa.delivery.global.apiPayload.ApiResponse;
+import com.mutsa.delivery.global.apiPayload.code.GeneralSuccessCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,61 +23,52 @@ import java.util.Map;
 public class CartController {
 
     private final CartService cartService;
-    private final CartItemRepository cartItemRepository;
 
+    // 장바구니 조회
     @GetMapping
-    public ResponseEntity<Map<String, Object>> getCart() {
-        Long dummyUserId = 1L; // 로그인 대용 더미 유저 ID 고정
+    public ResponseEntity<ApiResponse<?>> getCart() {
+        Long dummyUserId = 1L;
         CartResponseDto responseDto = cartService.getCart(dummyUserId);
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "장바구니 조회가 완료되었습니다.",
-                "data", responseDto
-        ));
+        return ResponseEntity.ok(ApiResponse.onSuccess(responseDto));
     }
 
+    // 장바구니 상품 추가
     @PostMapping("/items")
-    public ResponseEntity<Map<String, Object>> addCartItem(
+    public ResponseEntity<ApiResponse<?>> addCartItem(
             @Valid @RequestBody CartItemAddRequestDto requestDto) {
 
         Long cartItemId = cartService.addCartItem(requestDto);
+        Map<String, Long> data = Map.of("cartItemId", cartItemId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "success", true,
-                "message", "장바구니에 상품이 성공적으로 담겼습니다.",
-                "data", Map.of("cartItemId", cartItemId)
-        ));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.onSuccess(GeneralSuccessCode.CREATED, data));
     }
 
+    // 장바구니 상품 수량 변경
     @PatchMapping("/items/{id}")
-    public ResponseEntity<Map<String, Object>> updateCartItemQuantity(
+    public ResponseEntity<ApiResponse<?>> updateCartItemQuantity(
             @PathVariable("id") Long cartItemId,
             @Valid @RequestBody CartItemUpdateRequestDto requestDto) {
 
         Long dummyUserId = 1L;
-
         cartService.updateCartItemQuantity(dummyUserId, cartItemId, requestDto.getItemQuantity());
 
+        Map<String, Object> data = Map.of(
+                "cartItemId", cartItemId,
+                "itemQuantity", requestDto.getItemQuantity()
+        );
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "상품 수량이 성공적으로 변경되었습니다.",
-                "data", Map.of(
-                        "cartItemId", cartItemId,
-                        "itemQuantity", requestDto.getItemQuantity()
-                )
-        ));
+        return ResponseEntity.ok(ApiResponse.onSuccess(data));
     }
+
+    // 장바구니 상품 삭제
     @DeleteMapping("/items/{id}")
-    public ResponseEntity<Map<String, Object>> deleteCartItem(@PathVariable("id") Long cartItemId){
+    public ResponseEntity<ApiResponse<?>> deleteCartItem(@PathVariable("id") Long cartItemId) {
         Long dummyUserId = 1L;
+        cartService.deleteCartItem(dummyUserId, cartItemId);
 
-        cartService.deleteCartItem(dummyUserId,cartItemId);
-
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "장바구니에서 상품이 성공적으로 삭제되었습니다."
-        ));
+        // 반환할 데이터(data)가 없는 삭제 로직은 null을 담아 보냅니다.
+        return ResponseEntity.ok(ApiResponse.onSuccess(null));
     }
 }

@@ -32,8 +32,7 @@ public class CartController {
     }
 
     @PostMapping("/items")
-    public ResponseEntity<ApiResponse<Map<String, Long>>> addCartItem( // 구체 타입 명시
-                                                                       @Valid @RequestBody CartItemAddRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<Map<String, Long>>> addCartItem(@Valid @RequestBody CartItemAddRequestDto requestDto) {
 
         Long cartItemId = cartService.addCartItem(requestDto);
         Map<String, Long> data = Map.of("cartItemId", cartItemId);
@@ -43,9 +42,9 @@ public class CartController {
     }
 
     @PatchMapping("/items/{id}")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> updateCartItemQuantity( // 구체 타입 명시
-                                                                                    @PathVariable("id") Long cartItemId,
-                                                                                    @Valid @RequestBody CartItemUpdateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> updateCartItemQuantity(
+            @PathVariable("id") Long cartItemId,
+            @Valid @RequestBody CartItemUpdateRequestDto requestDto) {
 
         Long dummyUserId = 1L;
         cartService.updateCartItemQuantity(dummyUserId, cartItemId, requestDto.getItemQuantity());

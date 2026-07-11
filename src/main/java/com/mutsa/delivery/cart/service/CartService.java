@@ -42,7 +42,7 @@ public class CartService {
     public Long addCartItem(CartItemAddRequestDto requestDto) {
         Long dummyUserId = 1L;
         User user = userRepository.findById(dummyUserId)
-                .orElseThrow(() -> new ProjectException(CartErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND));
 
         Cart cart = cartRepository.findByUserId(dummyUserId)
                 .orElseGet(() -> {

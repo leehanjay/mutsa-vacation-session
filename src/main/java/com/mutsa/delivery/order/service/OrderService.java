@@ -7,6 +7,7 @@ import com.mutsa.delivery.cart.repository.CartItemRepository;
 import com.mutsa.delivery.cart.repository.CartRepository;
 import com.mutsa.delivery.credit.entity.CreditTransaction;
 import com.mutsa.delivery.credit.repository.CreditTransactionRepository;
+import com.mutsa.delivery.global.apiPayload.code.GeneralErrorCode;
 import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.order.dto.request.OrderRequestDto;
 import com.mutsa.delivery.order.dto.response.OrderResponseDto;
@@ -45,7 +46,7 @@ public class OrderService {
     @Transactional
     public OrderResponseDto createOrder(Long userId, OrderRequestDto requestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ProjectException(OrderErrorCode.USER_NOT_FOUND)); // 변경
+                .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND)); // 변경
 
         if (user.getCredit() < requestDto.getUsedCredit()) {
             throw new ProjectException(OrderErrorCode.INSUFFICIENT_CREDIT); // 변경

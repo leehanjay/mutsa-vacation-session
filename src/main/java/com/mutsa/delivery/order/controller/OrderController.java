@@ -23,9 +23,8 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    // 주문 및 결제 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> createOrder(@Valid @RequestBody OrderRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<OrderResponseDto>> createOrder(@Valid @RequestBody OrderRequestDto requestDto) { // 구체 타입 명시
         Long dummyUserId = 1L;
 
         OrderResponseDto responseDto = orderService.createOrder(dummyUserId, requestDto);

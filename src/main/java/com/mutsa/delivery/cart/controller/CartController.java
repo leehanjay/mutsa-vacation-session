@@ -24,19 +24,16 @@ public class CartController {
 
     private final CartService cartService;
 
-    // 장바구니 조회
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getCart() {
+    public ResponseEntity<ApiResponse<CartResponseDto>> getCart() { // 구체 타입 명시
         Long dummyUserId = 1L;
         CartResponseDto responseDto = cartService.getCart(dummyUserId);
-
         return ResponseEntity.ok(ApiResponse.onSuccess(responseDto));
     }
 
-    // 장바구니 상품 추가
     @PostMapping("/items")
-    public ResponseEntity<ApiResponse<?>> addCartItem(
-            @Valid @RequestBody CartItemAddRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<Map<String, Long>>> addCartItem( // 구체 타입 명시
+                                                                       @Valid @RequestBody CartItemAddRequestDto requestDto) {
 
         Long cartItemId = cartService.addCartItem(requestDto);
         Map<String, Long> data = Map.of("cartItemId", cartItemId);
@@ -45,11 +42,10 @@ public class CartController {
                 .body(ApiResponse.onSuccess(GeneralSuccessCode.CREATED, data));
     }
 
-    // 장바구니 상품 수량 변경
     @PatchMapping("/items/{id}")
-    public ResponseEntity<ApiResponse<?>> updateCartItemQuantity(
-            @PathVariable("id") Long cartItemId,
-            @Valid @RequestBody CartItemUpdateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> updateCartItemQuantity( // 구체 타입 명시
+                                                                                    @PathVariable("id") Long cartItemId,
+                                                                                    @Valid @RequestBody CartItemUpdateRequestDto requestDto) {
 
         Long dummyUserId = 1L;
         cartService.updateCartItemQuantity(dummyUserId, cartItemId, requestDto.getItemQuantity());
@@ -62,13 +58,10 @@ public class CartController {
         return ResponseEntity.ok(ApiResponse.onSuccess(data));
     }
 
-    // 장바구니 상품 삭제
     @DeleteMapping("/items/{id}")
-    public ResponseEntity<ApiResponse<?>> deleteCartItem(@PathVariable("id") Long cartItemId) {
+    public ResponseEntity<ApiResponse<Void>> deleteCartItem(@PathVariable("id") Long cartItemId) { // Void 명시
         Long dummyUserId = 1L;
         cartService.deleteCartItem(dummyUserId, cartItemId);
-
-        // 반환할 데이터(data)가 없는 삭제 로직은 null을 담아 보냅니다.
         return ResponseEntity.ok(ApiResponse.onSuccess(null));
     }
 }

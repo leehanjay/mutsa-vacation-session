@@ -13,6 +13,7 @@ public enum CartErrorCode implements BaseErrorCode {
     CART_ITEM_ACCESS_DENIED(HttpStatus.FORBIDDEN, "CART403", "해당 장바구니 상품에 대한 권한이 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER404", "존재하지 않는 유저입니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU404", "존재하지 않는 메뉴입니다."),
+    DIFFERENT_STORE_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "CART400_2", "동일한 가게의 메뉴만 장바구니에 담을 수 있습니다."),
     OPTION_NOT_FOUND(HttpStatus.BAD_REQUEST, "OPTION400", "존재하지 않는 옵션이 포함되어 있습니다.");
     private final HttpStatus status;
     private final String code;

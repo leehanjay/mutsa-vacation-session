@@ -11,6 +11,7 @@ import com.mutsa.delivery.cart.exception.CartErrorCode;
 import com.mutsa.delivery.cart.repository.CartItemOptionRepository;
 import com.mutsa.delivery.cart.repository.CartItemRepository;
 import com.mutsa.delivery.cart.repository.CartRepository;
+import com.mutsa.delivery.global.apiPayload.code.GeneralErrorCode;
 import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.menu.entity.Menu;
 import com.mutsa.delivery.menu.entity.Option;
@@ -41,7 +42,7 @@ public class CartService {
     public Long addCartItem(CartItemAddRequestDto requestDto) {
         Long dummyUserId = 1L;
         User user = userRepository.findById(dummyUserId)
-                .orElseThrow(() -> new ProjectException(CartErrorCode.USER_NOT_FOUND)); // 변경
+                .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND));
 
         Cart cart = cartRepository.findByUserId(dummyUserId)
                 .orElseGet(() -> {
@@ -50,7 +51,19 @@ public class CartService {
                 });
 
         Menu menu = menuRepository.findById(requestDto.getMenuId())
-                .orElseThrow(() -> new ProjectException(CartErrorCode.MENU_NOT_FOUND)); // 변경
+                .orElseThrow(() -> new ProjectException(CartErrorCode.MENU_NOT_FOUND));
+
+        // 🚨 [버그 픽스] 멀티스토어 메뉴 혼합 방지 검증 로직
+        if (cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
+            // 기존 장바구니에 있던 첫 번째 상품의 가게 ID 추출
+            Long existingStoreId = cart.getCartItems().get(0).getMenu().getStore().getStoreId();
+            // 새로 담으려는 메뉴의 가게 ID 추출
+            Long newStoreId = menu.getStore().getStoreId();
+
+            if (!existingStoreId.equals(newStoreId)) {
+                throw new ProjectException(CartErrorCode.DIFFERENT_STORE_NOT_ALLOWED);
+            }
+        }
 
         CartItem cartItem = CartItem.createNew(cart, menu, requestDto.getItemQuantity());
         CartItem savedCartItem = cartItemRepository.save(cartItem);
@@ -59,7 +72,7 @@ public class CartService {
             List<Option> options = optionRepository.findAllById(requestDto.getOptionIds());
 
             if (options.size() != requestDto.getOptionIds().size()) {
-                throw new ProjectException(CartErrorCode.OPTION_NOT_FOUND); // 변경
+                throw new ProjectException(CartErrorCode.OPTION_NOT_FOUND);
             }
 
             for (Option option : options) {

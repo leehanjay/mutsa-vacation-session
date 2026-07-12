@@ -8,13 +8,13 @@ import lombok.Getter;
 @Builder
 public class UserResponseDto {
     private Long userId;
-    private String loginId;
+    private String email;
     private Long credit;
 
     public static UserResponseDto from(User user) {
         return UserResponseDto.builder()
                 .userId(user.getUserId())
-                .loginId(user.getLoginId())
+                .email(user.getEmail())
                 .credit(user.getCredit())
                 .build();
     }

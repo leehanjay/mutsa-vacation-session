@@ -24,11 +24,14 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "login_id", nullable = false, unique = true)
-    private String loginId;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "nickname", nullable = false, unique = true)
+    private String nickname;
 
     @Column(name = "credit", nullable = false)
     private Long credit;
@@ -38,22 +41,27 @@ public class User extends BaseTimeEntity {
     private Long version; // 낙관적 락: 동시에 크레딧을 변경할 때 lost update 방지
 
     @Builder(access = AccessLevel.PRIVATE)
-    private User(String loginId, String password, Long credit) {
-        this.loginId = loginId;
+    private User(String email, String password, String nickname, Long credit) {
+        this.email = email;
         this.password = password;
+        this.nickname = nickname;
         this.credit = credit;
     }
 
-    public static User createNew(String loginId, String password) {
-        if (loginId == null || loginId.isBlank()) {
-            throw new IllegalArgumentException("loginId must not be blank");
+    public static User createNew(String email, String password, String nickname) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("email must not be blank");
         }
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("password must not be blank");
         }
+        if (nickname == null || nickname.isBlank()) {
+            throw new IllegalArgumentException("nickname must not be blank");
+        }
         return User.builder()
-                .loginId(loginId)
+                .email(email)
                 .password(password)
+                .nickname(nickname)
                 .credit(0L)
                 .build();
     }

@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+@Slf4j // log라는 필드가 이미 존재하는 것처럼 해 줌
 @Component
 public class JwtTokenProvider {
 

@@ -55,4 +55,9 @@ class JwtTokenProviderTest {
 
         assertThat(jwtTokenProvider.validateToken(token)).isFalse();
     }
+
+    @Test
+    void JWT_형식이_아닌_문자열은_검증에_실패한다() {
+        assertThat(jwtTokenProvider.validateToken("this-is-not-a-jwt")).isFalse();
+    }
 }

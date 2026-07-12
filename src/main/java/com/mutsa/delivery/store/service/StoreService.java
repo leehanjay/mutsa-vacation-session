@@ -1,5 +1,7 @@
 package com.mutsa.delivery.store.service;
 
+import com.mutsa.delivery.global.apiPayload.code.GeneralErrorCode;
+import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.menu.dto.response.MenuResponseDto;
 import com.mutsa.delivery.menu.dto.response.OptionGroupResponseDto;
 import com.mutsa.delivery.menu.entity.Menu;
@@ -44,7 +46,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public StoreDetailResponseDto getStoreDetail(Long storeId) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 가게입니다. storeId=" + storeId));
+                .orElseThrow(() -> new ProjectException(GeneralErrorCode.STORE_NOT_FOUND));
 
         List<Menu> menus = menuRepository.findByStore(store); // 가게 기준으로 메뉴 찾기
         // 찾은 메뉴들 전체에 대한 옵션그룹을 한 번에 조회 (쿼리 1번). 메뉴가 없으면 빈 IN() 조회를 피하기 위해 바로 빈 리스트 처리

@@ -35,8 +35,8 @@ public class StoreService {
     public List<StoreResponseDto> getStores(String category) {
         String trimmedCategory = category == null ? null : category.trim(); // 앞뒤 공백 제거 후 비교
         List<Store> stores = (trimmedCategory == null || trimmedCategory.isBlank()) // null이면 카테고리 전체를 의미
-                ? storeRepository.findAll()
-                : storeRepository.findByCategory_TagName(trimmedCategory);
+                ? storeRepository.findAllWithCategory()
+                : storeRepository.findByCategory_TagNameWithCategory(trimmedCategory);
 
         return stores.stream()
                 .map(StoreResponseDto::from)

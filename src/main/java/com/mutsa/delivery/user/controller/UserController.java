@@ -1,5 +1,6 @@
 package com.mutsa.delivery.user.controller;
 
+import com.mutsa.delivery.global.apiPayload.ApiResponse;
 import com.mutsa.delivery.user.dto.response.UserResponseDto;
 import com.mutsa.delivery.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDto> getMyInfo() {
-        return ResponseEntity.ok(userService.getMyInfo());
+    public ResponseEntity<ApiResponse<UserResponseDto>> getMyInfo() {
+        return ResponseEntity.ok(ApiResponse.onSuccess(userService.getMyInfo()));
     }
 }

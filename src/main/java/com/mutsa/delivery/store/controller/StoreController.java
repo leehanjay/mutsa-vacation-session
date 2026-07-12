@@ -1,5 +1,6 @@
 package com.mutsa.delivery.store.controller;
 
+import com.mutsa.delivery.global.apiPayload.ApiResponse;
 import com.mutsa.delivery.store.dto.response.StoreDetailResponseDto;
 import com.mutsa.delivery.store.dto.response.StoreResponseDto;
 import com.mutsa.delivery.store.service.StoreService;
@@ -21,14 +22,14 @@ public class StoreController {
     private final StoreService storeService;
 
     @GetMapping
-    public ResponseEntity<List<StoreResponseDto>> getStores(
+    public ResponseEntity<ApiResponse<List<StoreResponseDto>>> getStores(
             // "/stores?category={카테고리명}" 요청의 쿼리파라미터를 받기 위한 어노테이션
             @RequestParam(required = false) String category) {
-        return ResponseEntity.ok(storeService.getStores(category));
+        return ResponseEntity.ok(ApiResponse.onSuccess(storeService.getStores(category)));
     }
 
     @GetMapping("/{storeId}")
-    public ResponseEntity<StoreDetailResponseDto> getStoreDetail(@PathVariable Long storeId) {
-        return ResponseEntity.ok(storeService.getStoreDetail(storeId));
+    public ResponseEntity<ApiResponse<StoreDetailResponseDto>> getStoreDetail(@PathVariable Long storeId) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(storeService.getStoreDetail(storeId)));
     }
 }

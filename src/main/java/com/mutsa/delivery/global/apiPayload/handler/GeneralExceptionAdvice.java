@@ -6,6 +6,7 @@ import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,6 +52,12 @@ public class GeneralExceptionAdvice {
     public ResponseEntity<ApiResponse<Void>> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
         return ResponseEntity.status(GeneralErrorCode.UNSUPPORTED_MEDIA_TYPE.getStatus())
                 .body(ApiResponse.onFailure(GeneralErrorCode.UNSUPPORTED_MEDIA_TYPE));
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ApiResponse<Void>> handleObjectOptimisticLockingFailureException(ObjectOptimisticLockingFailureException e) {
+        return ResponseEntity.status(GeneralErrorCode.CONFLICT.getStatus())
+                .body(ApiResponse.onFailure(GeneralErrorCode.CONFLICT));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

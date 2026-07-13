@@ -5,6 +5,7 @@ import com.mutsa.delivery.global.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,10 +22,14 @@ public class SecurityConfig {
 
     private static final String[] PERMIT_ALL_URIS = {
             "/auth/**",
-            "/stores/**",
-            "/categories/**",
             "/swagger-ui/**",
             "/v3/api-docs/**"
+    };
+
+    // 조회(GET)만 열어주는 경로 - 같은 prefix로 쓰기 API가 추가돼도 자동으로 열리지 않도록 메서드를 제한함
+    private static final String[] PERMIT_ALL_GET_URIS = {
+            "/stores/**",
+            "/categories/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -37,6 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(PERMIT_ALL_URIS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PERMIT_ALL_GET_URIS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))

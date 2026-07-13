@@ -20,6 +20,6 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponseDto>> getMyInfo(@AuthenticationPrincipal JwtUserPrincipal principal) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(userService.getMyInfo()));
+        return ResponseEntity.ok(ApiResponse.onSuccess(userService.getMyInfo(principal.userId())));
     }
 }

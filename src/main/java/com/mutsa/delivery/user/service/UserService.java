@@ -41,12 +41,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponseDto getMyInfo() {
-        // JwtAuthenticationFilter가 채워둔 SecurityContext에서 인증 객체의 Name(=userId)을 꺼냄
-        String currentUserIdStr = SecurityContextHolder.getContext().getAuthentication().getName();
-        Long currentUserId = Long.parseLong(currentUserIdStr);
-
-        User user = userRepository.findById(currentUserId)
+    public UserResponseDto getMyInfo(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND));
         return UserResponseDto.from(user);
     }

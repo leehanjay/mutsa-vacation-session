@@ -1,5 +1,6 @@
 package com.mutsa.delivery.global.config;
 
+import com.mutsa.delivery.global.security.JwtAccessDeniedHandler;
 import com.mutsa.delivery.global.security.JwtAuthenticationEntryPoint;
 import com.mutsa.delivery.global.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,7 +47,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PERMIT_ALL_GET_URIS).permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

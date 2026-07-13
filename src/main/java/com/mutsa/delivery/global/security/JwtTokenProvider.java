@@ -5,6 +5,7 @@ import com.mutsa.delivery.global.security.exception.AuthErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +26,7 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long expiration;
+    private final JwtParser jwtParser;
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
@@ -32,6 +34,7 @@ public class JwtTokenProvider {
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiration = expiration;
+        this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
     }
 
     public String createToken(Long userId, String email) {
@@ -50,7 +53,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         JwtUserPrincipal principal = new JwtUserPrincipal(
-                Long.valueOf(claims.getSubject()),
+                parseUserId(claims),
                 claims.get(CLAIM_EMAIL, String.class)
         );
         return new UsernamePasswordAuthenticationToken(principal, null, List.of());
@@ -58,16 +61,21 @@ public class JwtTokenProvider {
 
     private Claims parseClaims(String token) {
         try {
-            return Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            return jwtParser.parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
             log.debug("만료된 JWT 토큰입니다: {}", e.getMessage());
             throw new ProjectException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
             log.debug("유효하지 않은 JWT 토큰입니다: {}", e.getMessage());
+            throw new ProjectException(AuthErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    private Long parseUserId(Claims claims) {
+        try {
+            return Long.valueOf(claims.getSubject());
+        } catch (NumberFormatException e) {
+            log.debug("토큰의 subject가 숫자 형식이 아닙니다: {}", claims.getSubject());
             throw new ProjectException(AuthErrorCode.INVALID_TOKEN);
         }
     }

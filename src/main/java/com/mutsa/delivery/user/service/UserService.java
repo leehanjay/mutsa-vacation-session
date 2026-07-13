@@ -13,13 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private static final Long CURRENT_USER_ID = 1L; // 로그인 미구현: user_id=1을 현재 로그인 사용자로 간주
-
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public UserResponseDto getMyInfo() {
-        User user = userRepository.findById(CURRENT_USER_ID)
+    public UserResponseDto getMyInfo(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND));
         return UserResponseDto.from(user);
     }

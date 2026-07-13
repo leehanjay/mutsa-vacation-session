@@ -2,7 +2,7 @@
 -- INSERT IGNORE: 서버 재시작 시 data.sql이 매번 재실행되어도 PK 중복 오류가 나지 않도록 함
 
 INSERT IGNORE INTO users (user_id, email, password, nickname, credit, version, created_at, updated_at)
-VALUES (1, 'mutsa_user@example.com', 'password123', '멋쟁이사자', 5000, 0, NOW(), NOW());
+VALUES (1, 'mutsa_user@example.com', '$2a$10$7jxxMplM.E08QhjwPQDVhuWJ9frBd1LyiI5rrs0T8MnzYui3vEET.', '멋쟁이사자', 5000, 0, NOW(), NOW());
 
 INSERT IGNORE INTO categories (category_id, tag_name, created_at, updated_at)
 VALUES

@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,7 +23,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
 
+    private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+
     private final JwtTokenProvider jwtTokenProvider;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        for (String pattern : SecurityWhitelist.PERMIT_ALL_URIS) {
+            if (PATH_MATCHER.match(pattern, path)) {
+                return true;
+            }
+        }
+
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            for (String pattern : SecurityWhitelist.PERMIT_ALL_GET_URIS) {
+                if (PATH_MATCHER.match(pattern, path)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     @Override
     protected void doFilterInternal(

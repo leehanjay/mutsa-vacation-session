@@ -1,13 +1,11 @@
 package com.mutsa.delivery.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mutsa.delivery.global.apiPayload.ApiResponse;
 import com.mutsa.delivery.global.apiPayload.code.GeneralErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -24,11 +22,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException {
-        response.setStatus(GeneralErrorCode.FORBIDDEN.getStatus().value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(
-                ApiResponse.onFailure(GeneralErrorCode.FORBIDDEN)
-        ));
+        SecurityErrorResponseWriter.write(
+                response, objectMapper, GeneralErrorCode.FORBIDDEN, GeneralErrorCode.FORBIDDEN.getMessage()
+        );
     }
 }

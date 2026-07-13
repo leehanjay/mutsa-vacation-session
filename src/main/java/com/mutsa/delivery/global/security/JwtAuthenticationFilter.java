@@ -21,7 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public static final String AUTH_EXCEPTION_ATTRIBUTE = "authException";
 
-    private static final String BEARER_PREFIX = "Bearer ";
+    private static final String BEARER_PREFIX = JwtTokenProvider.BEARER_TYPE + " ";
 
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 

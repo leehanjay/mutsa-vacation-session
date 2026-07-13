@@ -53,7 +53,7 @@ public class UserService {
 
         String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
 
-        return new LoginResponseDto(token, "Bearer");
+        return new LoginResponseDto(token, JwtTokenProvider.BEARER_TYPE);
     }
 
     @Transactional(readOnly = true)

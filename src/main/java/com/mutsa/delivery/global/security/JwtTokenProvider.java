@@ -1,14 +1,20 @@
 package com.mutsa.delivery.global.security;
 
+import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
+import com.mutsa.delivery.global.security.exception.AuthErrorCode;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @Slf4j // log라는 필드가 이미 존재하는 것처럼 해 줌
@@ -41,32 +47,28 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
+        JwtUserPrincipal principal = new JwtUserPrincipal(
+                Long.valueOf(claims.getSubject()),
+                claims.get(CLAIM_EMAIL, String.class)
+        );
+        return new UsernamePasswordAuthenticationToken(principal, null, List.of());
+    }
+
+    private Claims parseClaims(String token) {
         try {
-            Jwts.parser()
+            return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
-                    .parseSignedClaims(token);
-            return true;
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            log.debug("만료된 JWT 토큰입니다: {}", e.getMessage());
+            throw new ProjectException(AuthErrorCode.EXPIRED_TOKEN);
         } catch (JwtException | IllegalArgumentException e) {
             log.debug("유효하지 않은 JWT 토큰입니다: {}", e.getMessage());
-            return false;
+            throw new ProjectException(AuthErrorCode.INVALID_TOKEN);
         }
-    }
-
-    public Long getUserId(String token) {
-        return Long.valueOf(getClaims(token).getSubject());
-    }
-
-    public String getEmail(String token) {
-        return getClaims(token).get(CLAIM_EMAIL, String.class);
-    }
-
-    private Claims getClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
     }
 }

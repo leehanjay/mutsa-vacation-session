@@ -4,12 +4,13 @@ import com.mutsa.delivery.global.apiPayload.code.GeneralErrorCode;
 import com.mutsa.delivery.global.apiPayload.exception.ProjectException;
 import com.mutsa.delivery.global.security.JwtTokenProvider;
 import com.mutsa.delivery.global.security.exception.AuthErrorCode;
+import com.mutsa.delivery.user.dto.request.LoginRequestDto;
 import com.mutsa.delivery.user.dto.request.SignupRequestDto;
+import com.mutsa.delivery.user.dto.response.LoginResponseDto;
 import com.mutsa.delivery.user.dto.response.UserResponseDto;
 import com.mutsa.delivery.user.entity.User;
 import com.mutsa.delivery.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,21 @@ public class UserService {
         User user = User.createNew(requestDto.getEmail(), encodedPassword, requestDto.getNickname());
 
         userRepository.save(user);
+    }
+
+    //로그인
+    @Transactional(readOnly = true)
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new ProjectException(AuthErrorCode.LOGIN_FAILED));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new ProjectException(AuthErrorCode.LOGIN_FAILED);
+        }
+
+        String token = jwtTokenProvider.createToken(user.getUserId(), user.getEmail());
+
+        return new LoginResponseDto(token, "Bearer");
     }
 
     @Transactional(readOnly = true)

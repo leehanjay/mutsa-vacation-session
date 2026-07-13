@@ -2,7 +2,9 @@ package com.mutsa.delivery.user.controller;
 
 import com.mutsa.delivery.global.apiPayload.ApiResponse;
 import com.mutsa.delivery.global.apiPayload.code.GeneralSuccessCode;
+import com.mutsa.delivery.user.dto.request.LoginRequestDto;
 import com.mutsa.delivery.user.dto.request.SignupRequestDto;
+import com.mutsa.delivery.user.dto.response.LoginResponseDto;
 import com.mutsa.delivery.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,4 +29,9 @@ public class AuthController {
                 .body(ApiResponse.onSuccess(GeneralSuccessCode.CREATED, null));
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
+        LoginResponseDto responseDto = userService.login(requestDto);
+        return ResponseEntity.ok(ApiResponse.onSuccess(responseDto));
+    }
 }

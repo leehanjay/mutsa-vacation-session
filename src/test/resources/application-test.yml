@@ -11,3 +11,7 @@ spring:
   h2:
     console:
       enabled: true
+
+jwt:
+  secret: test-secret-key-for-jwt-signing-must-be-long-enough-256bit
+  expiration: 3600000

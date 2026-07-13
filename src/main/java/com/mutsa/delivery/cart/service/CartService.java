@@ -39,12 +39,12 @@ public class CartService {
 
     // 장바구니 담기
     @Transactional
-    public Long addCartItem(CartItemAddRequestDto requestDto) {
-        Long dummyUserId = 1L;
-        User user = userRepository.findById(dummyUserId)
+    public Long addCartItem(Long userId, CartItemAddRequestDto requestDto) {
+        // 내부 하드코딩을 제거하고 파라미터로 받은 userId를 그대로 활용합니다.
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ProjectException(GeneralErrorCode.USER_NOT_FOUND));
 
-        Cart cart = cartRepository.findByUserId(dummyUserId)
+        Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Cart newCart = Cart.createNew(user);
                     return cartRepository.save(newCart);
@@ -55,9 +55,7 @@ public class CartService {
 
         // 🚨 [버그 픽스] 멀티스토어 메뉴 혼합 방지 검증 로직
         if (cart.getCartItems() != null && !cart.getCartItems().isEmpty()) {
-            // 기존 장바구니에 있던 첫 번째 상품의 가게 ID 추출
             Long existingStoreId = cart.getCartItems().get(0).getMenu().getStore().getStoreId();
-            // 새로 담으려는 메뉴의 가게 ID 추출
             Long newStoreId = menu.getStore().getStoreId();
 
             if (!existingStoreId.equals(newStoreId)) {

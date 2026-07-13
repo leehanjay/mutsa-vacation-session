@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
+    public static final String BEARER_TYPE = "Bearer";
+
     private static final String CLAIM_EMAIL = "email";
 
     private final SecretKey secretKey;

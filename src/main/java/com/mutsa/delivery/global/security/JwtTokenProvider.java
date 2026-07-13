@@ -5,6 +5,7 @@ import com.mutsa.delivery.global.security.exception.AuthErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -25,6 +26,7 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long expiration;
+    private final JwtParser jwtParser;
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
@@ -32,6 +34,7 @@ public class JwtTokenProvider {
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expiration = expiration;
+        this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
     }
 
     public String createToken(Long userId, String email) {
@@ -58,11 +61,7 @@ public class JwtTokenProvider {
 
     private Claims parseClaims(String token) {
         try {
-            return Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+            return jwtParser.parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
             log.debug("만료된 JWT 토큰입니다: {}", e.getMessage());
             throw new ProjectException(AuthErrorCode.EXPIRED_TOKEN);

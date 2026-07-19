@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice // 프로젝트 전체 컨트롤러에서 발생하는 예외를 가로채는 전역 핸들러
 public class GeneralExceptionAdvice {
 
     @ExceptionHandler(ProjectException.class)

@@ -28,15 +28,15 @@ public class JwtTokenProvider {
 
     private final SecretKey secretKey;
     private final long expiration;
-    private final JwtParser jwtParser;
+    private final JwtParser jwtParser; // 객체임
 
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration}") long expiration
     ) {
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)); // 문자열 -> Secret Key 변환 (서명용)
         this.expiration = expiration;
-        this.jwtParser = Jwts.parser().verifyWith(secretKey).build();
+        this.jwtParser = Jwts.parser().verifyWith(secretKey).build(); // Secret Key가 유효하면, 안에 내용을 꺼내는 역할을 함
     }
 
     public String createToken(Long userId, String email) {

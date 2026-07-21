@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL) // result가 null이면 필드 자체가 응답에서 빠짐
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApiResponse<T> {
 
@@ -19,6 +19,7 @@ public class ApiResponse<T> {
     private String message;
     private T result;
 
+    // ApiResponse 클래스 밖에서는 이 생성자를 못 씀
     private ApiResponse(boolean isSuccess, String code, String message, T result) {
         this.isSuccess = isSuccess;
         this.code = code;

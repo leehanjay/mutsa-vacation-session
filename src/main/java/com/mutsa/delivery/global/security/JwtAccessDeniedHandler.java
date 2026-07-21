@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+// 403(누군지는 알지만 권한이 없음) - 인증은 성공했으니 인증 실패 시 던지는 커스텀 예외 저장 로직이 필요 X
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     private final ObjectMapper objectMapper;

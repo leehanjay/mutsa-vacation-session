@@ -2,6 +2,7 @@ package com.mutsa.delivery.global.security;
 
 public final class SecurityWhitelist {
 
+    // 로그인, 회원가입, swagger 문서는 완전 오픈
     public static final String[] PERMIT_ALL_URIS = {
             "/auth/**",
             "/swagger-ui/**",

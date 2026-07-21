@@ -22,7 +22,6 @@ spring:
         registration:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
-            # 💡 client-secret 은 카카오 보안 설정에서 OFF라면 이 줄을 아예 삭제!
             redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
@@ -44,4 +43,7 @@ jwt:
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,https://7th-delivery-app.vercel.app}
+
+oauth2:
+  success-redirect-uri: ${OAUTH2_SUCCESS_REDIRECT_URI:https://localhost:3000/outh2/redirect}
 

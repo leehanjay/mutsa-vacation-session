@@ -1,8 +1,10 @@
 package com.mutsa.delivery.global.config;
 
+import com.mutsa.delivery.global.security.CustomOAuth2UserService;
 import com.mutsa.delivery.global.security.JwtAccessDeniedHandler;
 import com.mutsa.delivery.global.security.JwtAuthenticationEntryPoint;
 import com.mutsa.delivery.global.security.JwtAuthenticationFilter;
+import com.mutsa.delivery.global.security.OAuth2FailureHandler;
 import com.mutsa.delivery.global.security.SecurityWhitelist;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

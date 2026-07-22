@@ -1,5 +1,6 @@
 package com.mutsa.delivery.user.repository;
 
+import com.mutsa.delivery.user.entity.SocialType;
 import com.mutsa.delivery.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,4 +10,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByNickname(String nickname);
+    Optional<User> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 }
